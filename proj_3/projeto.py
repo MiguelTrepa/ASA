@@ -65,7 +65,6 @@ for j in range(1, countries + 1):
     min_import = country_data[j - 1][2]
 
     factories_in_country = [f[0] for f in filtered_factory_data if f[1] == j]
-    factories_out_country = [f[0] for f in filtered_factory_data if f[1] != j]
 
     children_in_country = [k for k in range(1, children + 1) if filtered_child_requests[k - 1][1] == j]
     children_out_country = [k for k in range(1, children + 1) if filtered_child_requests[k - 1][1] != j]
@@ -73,7 +72,7 @@ for j in range(1, countries + 1):
     problem += lpSum(x[k, i] for i in factories_in_country for k in children_out_country 
                 if (k, i) in x) <= max_export, f"Country_{j}_Export_Limit"
 
-    problem += lpSum(x[k, i] for i in factories_out_country for k in children_in_country
+    problem += lpSum(x[k, i] for i in valid_factory_ids for k in children_in_country
                 if (k, i) in x) >= min_import, f"Country_{j}_Import_Minimum"
 
 # Solve the problem
