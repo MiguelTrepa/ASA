@@ -45,30 +45,30 @@ problem = LpProblem("Maximize_Satisfied_Children", LpMaximize)
 
 # Create binary variables for child-factory pairs
 x = LpVariable.dicts("x", [(k, i) for k in range(1, children + 1) for i in range(1, factories + 1) 
-                 if i in child_requests[k - 1][2:]], 0, None, LpBinary)
+                 if i in filtered_child_requests[k - 1][2:]], 0, None, LpBinary)
 
 # Objective function: Maximize the number of satisfied children
 problem += lpSum(x[k, i] for (k, i) in x), "Maximize_Satisfied_Children"
 
 # Restriction 1: Each child receives at most one present
 for k in range(1, children + 1):
-    problem += lpSum(x[k, i] for i in range(1, factories + 1) if i in child_requests[k - 1][2:]) <= 1, f"Child_{k}_One_Present"
+    problem += lpSum(x[k, i] for i in range(1, factories + 1) if i in filtered_child_requests[k - 1][2:]) <= 1, f"Child_{k}_One_Present"
 
 # Restriction 2: Maximum capacity for each factory
 for i in range(1, factories + 1):
-    max_capacity = factory_data[i - 1][2]
-    problem += lpSum(x[k, i] for k in range(1, children + 1) if i in child_requests[k - 1][2:]) <= max_capacity, f"Factory_{i}_Capacity"
+    max_capacity = filtered_factory_data[i - 1][2]
+    problem += lpSum(x[k, i] for k in range(1, children + 1) if i in filtered_child_requests[k - 1][2:]) <= max_capacity, f"Factory_{i}_Capacity"
 
 # Restrictions 3 and 4: Export and import limits per country
 for j in range(1, countries + 1):
     max_export = country_data[j - 1][1]
     min_import = country_data[j - 1][2]
 
-    factories_in_country = [f[0] for f in factory_data if f[1] == j]
-    factories_out_country = [f[0] for f in factory_data if f[1] != j]
+    factories_in_country = [f[0] for f in filtered_factory_data if f[1] == j]
+    factories_out_country = [f[0] for f in filtered_factory_data if f[1] != j]
 
-    children_in_country = [k for k in range(1, children + 1) if child_requests[k - 1][1] == j]
-    children_out_country = [k for k in range(1, children + 1) if child_requests[k - 1][1] != j]
+    children_in_country = [k for k in range(1, children + 1) if filtered_child_requests[k - 1][1] == j]
+    children_out_country = [k for k in range(1, children + 1) if filtered_child_requests[k - 1][1] != j]
 
     problem += lpSum(x[k, i] for i in factories_in_country for k in children_out_country 
                 if (k, i) in x) <= max_export, f"Country_{j}_Export_Limit"
