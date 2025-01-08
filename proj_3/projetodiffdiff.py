@@ -15,16 +15,19 @@ factories, countries, children = map(int, sys.stdin.readline().strip().split())
 factory_data = []
 for _ in range(factories):
     factory_data.append(list(map(int, sys.stdin.readline().strip().split())))
+print(factory_data)
 
 # Lê os países
 country_data = []
 for _ in range(countries):
     country_data.append(list(map(int, sys.stdin.readline().strip().split())))
+print(country_data)
 
 # Lê os pedidos das crianças
 child_requests = []
 for _ in range(children):
     child_requests.append(list(map(int, sys.stdin.readline().strip().split())))
+print(child_requests)
 
 #_______________________________________________________________________________________________________
 
@@ -57,10 +60,10 @@ for j in range(1, countries + 1):
 
     # Fábricas dentro e fora do país j
     factories_in_country = [f[0] for f in factory_data if f[1] == j]
-    factories_outof_country = [f[0] for f in factory_data if f[1] == j]
+    factories_outof_country = [f[0] for f in factory_data]
 
     # Crianças dentro e fora do país j
-    children_in_country = [k for k in range(1, children + 1) if child_requests[k - 1][1] != j]
+    children_in_country = [k for k in range(1, children + 1) if child_requests[k - 1][1] == j]
     children_outof_country = [k for k in range(1, children + 1) if child_requests[k - 1][1] != j]
 
     problem += lpSum(x[k, i] for i in factories_in_country for k in children_outof_country) <= max_export, f"Country_{j}_Export_Limit"
