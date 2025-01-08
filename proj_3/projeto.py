@@ -38,6 +38,12 @@ filtered_child_requests = [
     child for child in child_requests if any(f in valid_factory_ids for f in child[2:])
 ]
 
+if not filtered_child_requests or not filtered_factory_data:
+    print(-1)
+    sys.exit()
+
+print(filtered_child_requests)
+
 #_______________________________________________________________________________________________________
 
 # Iniciar o problema
