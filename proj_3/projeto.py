@@ -44,11 +44,11 @@ filtered_child_requests = [
 problem = LpProblem("Maximize_Satisfied_Children", LpMaximize)
 
 # Create binary variables for child-factory pairs
-x = LpVariable.dicts("x", [(k, i) for k in range(1, children + 1) for i in range(1, factories + 1)], 0, None, LpBinary)
+x = LpVariable.dicts("x", [(k, i) for k in range(1, children + 1) for i in range(1, factories + 1) 
+                 if i in child_requests[k - 1][2:]], 0, None, LpBinary)
 
 # Objective function: Maximize the number of satisfied children
-problem += lpSum(x[k, i] for k in range(1, children + 1) for i in range(1, factories + 1) 
-                 if i in child_requests[k - 1][2:]), "Maximize_Satisfied_Children"
+problem += lpSum(x[k, i] for (k, i) in x), "Maximize_Satisfied_Children"
 
 # Restriction 1: Each child receives at most one present
 for k in range(1, children + 1):
@@ -70,13 +70,17 @@ for j in range(1, countries + 1):
     children_in_country = [k for k in range(1, children + 1) if child_requests[k - 1][1] == j]
     children_out_country = [k for k in range(1, children + 1) if child_requests[k - 1][1] != j]
 
-    problem += lpSum(x[k, i] for i in factories_in_country for k in children_out_country) <= max_export, f"Country_{j}_Export_Limit"
-    problem += lpSum(x[k, i] for i in factories_out_country for k in children_in_country) >= min_import, f"Country_{j}_Import_Minimum"
+    problem += lpSum(x[k, i] for i in factories_in_country for k in children_out_country 
+                if (k, i) in x) <= max_export, f"Country_{j}_Export_Limit"
+
+    problem += lpSum(x[k, i] for i in factories_out_country for k in children_in_country
+                if (k, i) in x) >= min_import, f"Country_{j}_Import_Minimum"
 
 # Solve the problem
 problem.solve(PULP_CBC_CMD(msg=False))
 
 # Print the result
+status = problem.solve(PULP_CBC_CMD(msg=False))
 if LpStatus[problem.status] == "Optimal":
     print(int(value(problem.objective)))
 else:
