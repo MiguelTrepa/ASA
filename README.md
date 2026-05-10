@@ -1,6 +1,6 @@
 # ASA Projeto de Análise e Sintese de Algoritmos
 
-2024/2025 project for the course of Analysis and Synthesis of Algorithms, containing 3 smaller sub-projects, each in their respective directory.
+2024/2025 project for the course of Analysis and Synthesis of Algorithms, containing 3 smaller sub-projects, each in their respective directory. Solutions are implemented in C++ or Python.
 
 ## First Sub-Project
 
